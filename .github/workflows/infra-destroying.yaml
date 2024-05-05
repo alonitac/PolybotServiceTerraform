@@ -1,0 +1,45 @@
+name: Polybot Infrastructure Destroy Terraform
+
+on:
+  workflow_dispatch:
+    inputs:
+      us-east-1:
+        description: 'N.Virginia (us-east-1)'
+        required: false
+        type: boolean
+      eu-central-1:
+        description: 'Frankfurt (eu-central-1)'
+        required: false
+        type: boolean
+
+jobs:
+  Terraform:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    strategy:
+      matrix:
+        region:
+          - us-east-1
+          - eu-central-1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Infrastructure destroying
+        if: ${{ github.event.inputs[ matrix.region ] == 'true' }}
+        working-directory: ./tf
+        run: |
+          # init terraform 
+          terraform init
+          
+          # select workspace or create if needed
+          terraform workspace select ${{ matrix.region }}  || terraform workspace new ${{ matrix.region }}
+
+          # tf destroy 
+          terraform destroy -auto-approve -var-file=${{ matrix.region }}

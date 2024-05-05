@@ -1,0 +1,48 @@
+name: Polybot Infrastructure Terraform Specific Region
+
+on:
+  workflow_call:
+    inputs:
+      region-code:
+        required: true
+        type: string
+    secrets:
+      TELEGRAM_TOKEN:
+        required: true
+
+jobs:
+  Terraform:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    defaults:
+      run:
+        working-directory: ./tf  # The directory containing your Terraform configuration files
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform workspace select
+        run: terraform workspace select ${{ inputs.region-code }} || terraform workspace new ${{ inputs.region-code }}
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: | 
+          export TF_VAR_botToken=${{ secrets.TELEGRAM_TOKEN }}
+          terraform plan -var-file=region.${{ inputs.region-code }}.tfvars
+
+      - name: Terraform apply
+        run: |
+          export TF_VAR_botToken=${{ secrets.TELEGRAM_TOKEN }}
+          terraform apply -auto-approve -var-file=region.${{ inputs.region-code }}.tfvars
