@@ -18,13 +18,13 @@ jobs:
     uses: ./.github/workflows/infra-provisioning-region.yaml
     with:
       region-code: us-east-1
-    secrets:
-      TELEGRAM_TOKEN: ${{ secrets.US_EAST_1_TELEGRAM_TOKEN }}
+      telegram-token-secret-name: US_EAST_1_TELEGRAM_TOKEN
+    secrets: inherit
 
   eu-central-1:
     if: ${{ github.event.inputs.eu-central-1 == 'true' }}
     uses: ./.github/workflows/infra-provisioning-region.yaml
     with:
       region-code: eu-central-1
-    secrets:
-      TELEGRAM_TOKEN: ${{ secrets.EU_CENTRAL_1_TELEGRAM_TOKEN }}
+      telegram-token-secret-name: EU_CENTRAL_1_TELEGRAM_TOKEN
+    secrets: inherit
