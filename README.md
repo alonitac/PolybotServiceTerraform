@@ -1,6 +1,7 @@
+> [!NOTE]
+> This project is part of the [DevOpsTheHardWay][DevOpsTheHardWay] course. 
+
 > [!IMPORTANT]
-> This project is part of the [DevOpsTheHardWay][DevOpsTheHardWay] course. Please [onboard the course][onboarding_tutorial] before starting. 
-> 
 > The project builds upon the work done in our [previous AWS project][PolybotServiceAWS].
 > **You have to complete the AWS project first in order to start this project.** 
 
